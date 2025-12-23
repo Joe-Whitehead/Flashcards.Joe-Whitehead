@@ -117,8 +117,9 @@ namespace Flashcards.Views
                     {
                         Display.FullStackView(stack);
                         Display.PressToContinue($"Next Stack [[Page {counter++} of {stacks.Count}]]");
-                        AnsiConsole.WriteLine("\n");                        
+                        AnsiConsole.Clear();
                     }
+                    Display.ShowPanelMessage("End of Stacks", "You have reached the end of the stacks.", Color.Green);
                     Display.PressToContinue();
                     break;
 
