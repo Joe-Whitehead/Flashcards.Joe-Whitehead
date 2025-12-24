@@ -1,27 +1,26 @@
 ﻿using Flashcards.Models;
-namespace Flashcards.DTOs
+namespace Flashcards.DTOs;
+
+public class FlashcardDTO
 {
-    public class FlashcardDTO
+    public string Question { get; set; }
+    public string Answer { get; set; }
+
+
+    public static FlashcardDTO ToDto(Flashcard flashcard)
     {
-        public string Question { get; set; }
-        public string Answer { get; set; }
-
-
-        public static FlashcardDTO ToDto(Flashcard flashcard)
+        return new FlashcardDTO
         {
-            return new FlashcardDTO
-            {
-                Question = flashcard.Question,
-                Answer = flashcard.Answer
-            };
-        }
+            Question = flashcard.Question,
+            Answer = flashcard.Answer
+        };
+    }
 
-        public static string ToDisplayString(Flashcard flashcard)
-        {
-            return $"Q: {flashcard.Question} | A: {flashcard.Answer}";
-        }
+    public static string ToDisplayString(Flashcard flashcard)
+    {
+        return $"Q: {flashcard.Question} | A: {flashcard.Answer}";
     }
 }
 
-            
-            
+        
+        

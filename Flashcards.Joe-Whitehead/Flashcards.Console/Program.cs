@@ -1,6 +1,4 @@
-﻿using System;
-using Flashcards.Data;
-using Flashcards.Models;
+﻿using Flashcards.Data;
 using Flashcards.Views;
 using Microsoft.EntityFrameworkCore;
 
