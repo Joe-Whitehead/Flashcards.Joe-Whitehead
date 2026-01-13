@@ -18,7 +18,7 @@ internal class ManageView
         _flashcardController = flashcardController;
     }
 
-    public void Run()
+    public async Task RunAsync()
     {
         while (true)
         {
@@ -31,7 +31,7 @@ internal class ManageView
             switch (selectedOption)
             {
                 case StackMenu.AddStack:
-                    string stackName = Validation.UniqueName(_stackController.GetAllStackNames());
+                    string stackName = Validation.UniqueName(await _stackController.GetAllStackNamesAsync());
                     List<FlashcardDTO> flashcards = [];
 
                     if (Display.YesNoPrompt("Would you like to add a flashcard to this stack now?"))
@@ -46,7 +46,7 @@ internal class ManageView
                             }
                         }
                     }
-                    _stackController.AddNewStack(new StackDTO
+                    await _stackController.AddNewStackAsync(new StackDTO
                     {
                         Name = stackName,
                         Flashcards = flashcards
@@ -54,14 +54,16 @@ internal class ManageView
                     break;
 
                 case StackMenu.EditExistingStack:
-                    GetStackSubMenu(DisplayStackMenu());
+                    var selectedStack = await DisplayStackMenuAsync();
+                    await GetStackSubMenuAsync(selectedStack);
+
                     break;
 
                 case StackMenu.DeleteStack:
-                    var stackToDelete = DisplayStackMenu();
+                    var stackToDelete = DisplayStackMenuAsync();
                     if (Display.YesNoPrompt("Are you sure you want to delete this stack? (This will also delete any Flashcards in the stack)"))
                     {
-                        _stackController.DeleteStack(stackToDelete.Id);
+                        await _stackController.DeleteStackAsync(stackToDelete.Id);
                         Display.SuccessMessage("Stack deleted successfully");
                     }
                     else
@@ -73,7 +75,7 @@ internal class ManageView
 
                 case StackMenu.ViewAllStacks:
                     Console.Clear();
-                    List<StackDTO> stacks = _stackController.GetAllStackDtos();
+                    List<StackDTO> stacks = await _stackController.GetAllStackDtosAsync();
                     int counter = 1;
                     foreach (StackDTO stack in stacks)
                     {
@@ -90,7 +92,7 @@ internal class ManageView
             }
         }
     }
-    private void GetStackSubMenu(Stack stack)
+    private async Task GetStackSubMenuAsync(Stack stack)
     {
         bool exitSubMenu = false;
 
@@ -112,24 +114,24 @@ internal class ManageView
             {
                 case EditStackMenu.RenameStack:
                     string prevName = stack.Name;
-                    stack.Name = Validation.UniqueName(_stackController.GetAllStackNames());
-                    if (_stackController.EditStack(stack))
+                    stack.Name = Validation.UniqueName(await _stackController.GetAllStackNamesAsync());
+                    if (await _stackController.EditStackAsync(stack))
                     {
                         Console.Clear();
                         Display.SuccessMessage($"Stack renamed from {prevName} to {stack.Name}.");
                     }
                     Display.PressToContinue();
-                    RefreshStack(stack);
+                    await RefreshStackAsync(stack);
                     break;
 
                 case EditStackMenu.AddFlashcardToStack:
                     var flashcardDto = Display.PromptFlashcardDetails();
-                    if (_stackController.AddFlashcardToStack(stack.Id, flashcardDto))
+                    if (await _stackController.AddFlashcardToStackAsync(stack.Id, flashcardDto))
                     {
                         Display.SuccessMessage("Flashcard added successfully.");
                     }
                     Display.PressToContinue();
-                    RefreshStack(stack);
+                    await RefreshStackAsync(stack);
                     break;
 
                 case EditStackMenu.EditFlashcardInStack:
@@ -137,12 +139,12 @@ internal class ManageView
                     selectedFlashcard = Display.PromptMenuSelection<Flashcard>(flashcards);
                     var updatedFlashcardDto = Display.PromptFlashcardDetails(selectedFlashcard.Question, selectedFlashcard.Answer);
 
-                    if (_flashcardController.UpdateFlashcard(selectedFlashcard.Id, updatedFlashcardDto))
+                    if (await _flashcardController.UpdateFlashcardAsync(selectedFlashcard.Id, updatedFlashcardDto))
                     {
                         Display.SuccessMessage("Flashcard updated successfully.");
                     }
                     Display.PressToContinue();
-                    RefreshStack(stack);
+                    await RefreshStackAsync(stack);
                     break;
 
                 case EditStackMenu.DeleteFlashcardFromStack:
@@ -154,7 +156,7 @@ internal class ManageView
 
                     if (Display.YesNoPrompt("Are you sure you want to delete this flashcard?"))
                     {
-                        _flashcardController.DeleteFlashcard(selectedFlashcard.Id);
+                        await _flashcardController.DeleteFlashcardAsync(selectedFlashcard.Id);
                         Display.SuccessMessage("Flashcard deleted successfully.");
                     }
                     else
@@ -162,7 +164,7 @@ internal class ManageView
                         Display.CancelledMessage("Deletion cancelled.");
                     }
                     Display.PressToContinue();
-                    RefreshStack(stack);
+                    await RefreshStackAsync(stack);
                     break;
 
                 case EditStackMenu.ReturnToMainMenu:
@@ -172,17 +174,17 @@ internal class ManageView
         }
     }
 
-    private void RefreshStack(Stack stack)
+    private async Task RefreshStackAsync(Stack stack)
     {
-        var updatedStack = _stackController.GetStackById(stack.Id);
+        var updatedStack = await _stackController.GetStackByIdAsync(stack.Id);
 
         // Mutate the original object
         stack.Flashcards = updatedStack.Flashcards;
     }
 
-    private Stack DisplayStackMenu()
+    private async Task<Stack> DisplayStackMenuAsync()
     {
-        var stackList = _stackController.GetAllStacks();
+        var stackList = await _stackController.GetAllStacksAsync();
         var stackMenuItems = Display.GetModelItems(stackList);
         return Display.PromptMenuSelection<Stack>(stackMenuItems);
     }

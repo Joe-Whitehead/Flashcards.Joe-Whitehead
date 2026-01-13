@@ -9,14 +9,16 @@ internal class MainView
 {
     private readonly StackController _stackController;
     private readonly FlashcardController _flashcardController;
+    private readonly StudyController _studyController;
 
     public MainView()
     {
         _stackController = new StackController();
         _flashcardController = new FlashcardController();
+        _studyController = new StudyController();
     }
 
-    public void Run()
+    public async Task RunAsync()
     {
         while (true)
         {
@@ -33,11 +35,13 @@ internal class MainView
             switch (selectedOption)
             {
                 case MainMenu.StudyFlashcards:
+                    var studyView = new StudyView(_stackController, _flashcardController, _studyController);
+                    await studyView.RunAsync();
                     break;
 
                 case MainMenu.ManageStacksCards:
                     var manageView = new ManageView(_stackController, _flashcardController);
-                    manageView.Run();
+                    await manageView.RunAsync();
                     break;
 
                 case MainMenu.ViewStatistics:

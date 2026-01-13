@@ -7,11 +7,11 @@ internal enum MainMenu
     [Display(Name = "Study Flashcards")]
     StudyFlashcards = 1,
     [Display(Name = "Manage Stacks & Flashcards")]
-    ManageStacksCards,
+    ManageStacksCards = 2,
     [Display(Name = "View Statistics")]
-    ViewStatistics,
+    ViewStatistics = 3,
     [Display(Name = "Settings")]
-    Settings,
+    Settings = 4,
     [Display(Name = "Exit Application")]
-    ExitApplication
+    ExitApplication = 5
 }

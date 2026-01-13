@@ -15,32 +15,36 @@ public class StackController
         _flashcardRepository = new FlashcardRepository();
     }
 
-    public List<StackDTO> GetAllStackDtos()
+    public async Task<List<StackDTO>> GetAllStackDtosAsync()
     {
-        return GetAllStacks()
+        var allStackDtos = await _stackRepository.GetAllStacksAsync();
+
+        return allStackDtos
         .OrderBy(s => s.Id)
         .Select(s => s.ToDto())
         .ToList();
     }
 
-    public List<Stack> GetAllStacks()
+    public async Task<List<Stack>> GetAllStacksAsync()
     {
-        return _stackRepository.GetAllStacks()
+        var allStacks = await _stackRepository.GetAllStacksAsync();
+
+        return allStacks
         .OrderBy(s => s.Id)
         .ToList();
     }
 
-    public List<string> GetAllStackNames()
+    public async Task<List<string>> GetAllStackNamesAsync()
     {
-        return _stackRepository.GetAllStackNames();
+        return await _stackRepository.GetAllStackNamesAsync();
     }
 
-    public Stack GetStackById(int id)
+    public async Task<Stack> GetStackByIdAsync(int id)
     {
-        return _stackRepository.GetStack(id);
+        return await _stackRepository.GetStackAsync(id);
     }
 
-    public bool AddNewStack(StackDTO stack)
+    public async Task<bool> AddNewStackAsync(StackDTO stack)
     {
         var newStack = new Stack
         {
@@ -48,42 +52,43 @@ public class StackController
             CreatedAt = DateTime.Now,
             Flashcards = MapFlashcards(stack.Flashcards)
         };
-        List<Stack> existingStacks = _stackRepository.GetAllStacks();
+        List<Stack> existingStacks = await _stackRepository.GetAllStacksAsync();
 
-        return _stackRepository.AddStack(newStack);           
+        return await _stackRepository.AddStackAsync(newStack);           
     }
 
     private List<Flashcard> MapFlashcards(List<FlashcardDTO> flashcardDtos)
     {
-        var flashcards = flashcardDtos.Select(dto => new Flashcard            
-        {
-            Question = dto.Question,
-            Answer = dto.Answer,
-            CreatedAt = DateTime.Now,
-            LastUpdated = DateTime.Now             
-        }).ToList();
-        return flashcards;
+       return flashcardDtos
+            .Select(dto => new Flashcard            
+            {
+                Question = dto.Question,
+                Answer = dto.Answer,
+                CreatedAt = DateTime.Now,
+                LastUpdated = DateTime.Now             
+            })
+            .ToList();
     }
 
-    public bool EditStack(Stack stack)
+    public async Task<bool> EditStackAsync(Stack stack)
     {
-        var existingStack = _stackRepository.GetStack(stack.Id);
+        var existingStack = await _stackRepository.GetStackAsync(stack.Id);
         if (existingStack == null)
         {
             return false;
         }
         existingStack.Name = stack.Name;            
-        return _stackRepository.UpdateStack(existingStack);
+        return await _stackRepository.UpdateStackAsync(existingStack);
     }
 
-    public bool AddFlashcardToStack(int stackid, FlashcardDTO flashcardDto)
+    public async Task<bool> AddFlashcardToStackAsync(int stackid, FlashcardDTO flashcardDto)
     {
-        var stack = _stackRepository.GetStack(stackid);
+        var stack = await _stackRepository.GetStackAsync(stackid);
         if (stack == null)
         {
             return false;
         }
-        return _flashcardRepository.InsertFlashcard(new Flashcard
+        return await _flashcardRepository.InsertFlashcardAsync(new Flashcard
         {
             Question = flashcardDto.Question,
             Answer = flashcardDto.Answer,
@@ -93,14 +98,14 @@ public class StackController
         });           
     }
 
-    public bool DeleteStack(int id)
+    public async Task<bool> DeleteStackAsync(int id)
     {
-        var existingStack = _stackRepository.GetStack(id);
+        var existingStack = await _stackRepository.GetStackAsync(id);
         if (existingStack == null)
         {
             return false;
         }           
-        return _stackRepository.DeleteStack(existingStack);
+        return await _stackRepository.DeleteStackAsync(existingStack);
     }
 }
 

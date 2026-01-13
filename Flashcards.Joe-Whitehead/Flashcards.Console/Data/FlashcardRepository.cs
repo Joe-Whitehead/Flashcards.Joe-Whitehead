@@ -1,17 +1,18 @@
 ﻿using Flashcards.Models;
+using Microsoft.EntityFrameworkCore;
 using Spectre.Console;
 
 namespace Flashcards.Data;
 
 internal class FlashcardRepository
 {
-    internal bool InsertFlashcard(Flashcard flashcard)
+    internal async Task<bool> InsertFlashcardAsync(Flashcard flashcard)
     {
         using var db = new DatabaseContext();
         try
         {
             db.Flashcards.Add(flashcard);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
         catch (Exception ex)
@@ -21,13 +22,13 @@ internal class FlashcardRepository
         }
     }
 
-    internal bool UpdateFlashcard(Flashcard flashcard)
+    internal async Task<bool> UpdateFlashcardAsync(Flashcard flashcard)
     {
         using var db = new DatabaseContext();
         try
         {
             db.Flashcards.Update(flashcard);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
         catch (Exception ex)
@@ -37,13 +38,13 @@ internal class FlashcardRepository
         }
     }
 
-    internal bool DeleteFlashcard(Flashcard flashcard)
+    internal async Task<bool> DeleteFlashcardAsync(Flashcard flashcard)
     {
         using var db = new DatabaseContext();
         try
         {
             db.Flashcards.Remove(flashcard);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
         catch (Exception ex)
@@ -53,12 +54,12 @@ internal class FlashcardRepository
         }
     }
 
-    internal Flashcard? GetFlashcardById(int id)
+    internal async Task<Flashcard?> GetFlashcardByIdAsync(int id)
     {
         using var db = new DatabaseContext();
         try
         {
-            return db.Flashcards.FirstOrDefault(f => f.Id == id);
+            return await db.Flashcards.FirstOrDefaultAsync(f => f.Id == id);
         }
         catch (Exception ex)
         {
@@ -67,12 +68,12 @@ internal class FlashcardRepository
         }
     }
 
-    internal List<Flashcard> GetAllFlashcards()
+    internal async Task<List<Flashcard>> GetAllFlashcardsAsync()
     {
         using var db = new DatabaseContext();
         try
         {
-            return db.Flashcards.ToList();
+            return await db.Flashcards.ToListAsync();
         }
         catch (Exception ex)
         {

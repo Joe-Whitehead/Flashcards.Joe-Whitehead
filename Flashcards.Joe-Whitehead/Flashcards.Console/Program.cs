@@ -7,8 +7,8 @@ MainView app = new MainView();
 
 using (db)
 {
-    db.Database.Migrate();    
+    await db.Database.MigrateAsync();    
 }
 
-app.Run();
+await app.RunAsync();
 

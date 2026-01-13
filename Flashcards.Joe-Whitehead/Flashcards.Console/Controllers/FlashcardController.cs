@@ -1,6 +1,5 @@
 ﻿using Flashcards.Data;
 using Flashcards.DTOs;
-using Flashcards.Models;
 
 namespace Flashcards.Controllers;
 
@@ -11,12 +10,11 @@ public class FlashcardController
     public FlashcardController() 
     { 
         _flashcardRepository = new FlashcardRepository();
-        //_stackRepository = new StackRepository();
     }      
 
-    public bool UpdateFlashcard(int id, FlashcardDTO flashcardDto)
+    public async Task<bool> UpdateFlashcardAsync(int id, FlashcardDTO flashcardDto)
     {
-        var existingFlashcard = _flashcardRepository.GetFlashcardById(id);
+        var existingFlashcard = await _flashcardRepository.GetFlashcardByIdAsync(id);
         if (existingFlashcard == null)
         {
             return false;
@@ -24,12 +22,12 @@ public class FlashcardController
         existingFlashcard.Question = flashcardDto.Question;
         existingFlashcard.Answer = flashcardDto.Answer;
         existingFlashcard.LastUpdated = DateTime.UtcNow;
-        return _flashcardRepository.UpdateFlashcard(existingFlashcard);
+        return await _flashcardRepository.UpdateFlashcardAsync(existingFlashcard);
     }
 
-    public List<FlashcardDTO> GetAllFlashcards()
+    public async Task<List<FlashcardDTO>> GetAllFlashcardsAsync()
     {
-        var flashcards = _flashcardRepository.GetAllFlashcards();               
+        var flashcards = await _flashcardRepository.GetAllFlashcardsAsync();               
 
         var flashcardDtos = flashcards
             .OrderBy(f => f.Id)
@@ -44,13 +42,13 @@ public class FlashcardController
 
     }
 
-    public bool DeleteFlashcard(int id)
+    public async Task<bool> DeleteFlashcardAsync(int id)
     {
-        var existingFlashcard = _flashcardRepository.GetFlashcardById(id);
+        var existingFlashcard = await _flashcardRepository.GetFlashcardByIdAsync(id);
         if (existingFlashcard == null)
         {
             return false;
         }
-        return _flashcardRepository.DeleteFlashcard(existingFlashcard);
+        return await _flashcardRepository.DeleteFlashcardAsync(existingFlashcard);
     }
 }

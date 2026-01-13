@@ -6,14 +6,14 @@ namespace Flashcards.Data;
 
 public class StackRepository
 {
-    public List<Stack> GetAllStacks()
+    public async Task<List<Stack>> GetAllStacksAsync()
     {
         using var db = new DatabaseContext();
         try
         {
-            return db.Stacks
+            return await db.Stacks
                 .Include(s => s.Flashcards)
-                .ToList();
+                .ToListAsync();
         }
         catch (Exception ex)
         {
@@ -21,14 +21,14 @@ public class StackRepository
         }
     }
 
-    public List<string> GetAllStackNames()
+    public async Task<List<string>> GetAllStackNamesAsync()
     {
         using var db = new DatabaseContext();
         try
         {
-            return db.Stacks
+            return await db.Stacks
                 .Select(s => s.Name)
-                .ToList();
+                .ToListAsync();
         }
         catch (Exception ex)
         {
@@ -36,14 +36,14 @@ public class StackRepository
         }
     }
 
-    public Stack GetStack(int id)
+    public async Task<Stack> GetStackAsync(int id)
     {
         using var db = new DatabaseContext();
         try
         {
-            return db.Stacks
+            return await db.Stacks
                 .Include(s => s.Flashcards)
-                .Single(s => s.Id == id);
+                .SingleAsync(s => s.Id == id);
                 
         }
         catch (InvalidOperationException)
@@ -56,13 +56,13 @@ public class StackRepository
         }        
     }
 
-    public bool AddStack(Stack stack)
+    public async Task<bool> AddStackAsync(Stack stack)
     {
         using var db = new DatabaseContext();
         try
         {
             db.Stacks.Add(stack);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
         catch (Exception ex)
@@ -72,13 +72,13 @@ public class StackRepository
         }            
     }
 
-    public bool UpdateStack(Stack stack)
+    public async Task<bool> UpdateStackAsync(Stack stack)
     {
         using var db = new DatabaseContext();
         try
         {
             db.Stacks.Update(stack);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
         catch (Exception ex)
@@ -88,13 +88,13 @@ public class StackRepository
         }
     }
 
-    public bool DeleteStack(Stack stack)
+    public async Task<bool> DeleteStackAsync(Stack stack)
     {
         using var db = new DatabaseContext();
         try
         {
             db.Stacks.Remove(stack);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
         catch (Exception ex)

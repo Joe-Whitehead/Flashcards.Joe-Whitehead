@@ -44,6 +44,7 @@ internal static class Display
             stack => stack
         );
     }
+
     public static Dictionary<string, Flashcard> GetModelItems(List<Flashcard> flashcards)
     {
         return flashcards.ToDictionary(
@@ -219,8 +220,6 @@ internal static class Display
             .Header("Flashcard", Justify.Center)
             .Border(BoxBorder.Rounded)
             .Padding (5, 0)
-            .Expand();
-        
+            .Expand();        
     }
-
 }
