@@ -174,13 +174,13 @@ internal static class Display
         AnsiConsole.Write(grid);
     }
 
-    public static void FullStackView(StackDTO stack)
+    public static Panel StackInfoPanel(string name, int flashcardCount)
     {
-        var infoPanel = new Panel
+        return new Panel
             (
                 Align.Center(
                     new Markup(
-                        $"[bold yellow]Stack Name:[/] [white]{stack.Name}[/]\n[bold yellow]Number of Flashcards:[/] [white]{stack.Flashcards.Count}[/]"                        
+                        $"[bold yellow]Stack Name:[/] [white]{name}[/]\n[bold yellow]Number of Flashcards:[/] [white]{flashcardCount}[/]"                        
                     )
                 )
             )
@@ -188,17 +188,20 @@ internal static class Display
             .BorderColor(Color.Green)    
             .Padding(8, 0)
             .Expand();
+    }    
 
+    public static void FullStackView(StackDTO stack)
+    {
         var flashcardGrid = new Grid()
             .AddColumn()
             .AddColumn();
         for (int i = 0; i < stack.Flashcards.Count; i += 2)
-        {
-            var panel1 = CreateFlashcardPanel(stack.Flashcards[i]);
+        {            
+            var panel1 = FlashcardPanel(stack.Flashcards[i].Question, stack.Flashcards[i].Answer);
             Panel? panel2 = null;
 
             if (i + 1 < stack.Flashcards.Count)
-                panel2 = CreateFlashcardPanel(stack.Flashcards[i + 1]);
+                panel2 = FlashcardPanel(stack.Flashcards[i + 1].Question, stack.Flashcards[i + 1].Answer);
 
             flashcardGrid.AddRow(panel1, panel2 ?? new Panel("")
             {
@@ -207,14 +210,14 @@ internal static class Display
             });
         }
 
-        AnsiConsole.Write(infoPanel);
+        AnsiConsole.Write(StackInfoPanel(stack.Name, stack.Flashcards.Count));
         AnsiConsole.Write(flashcardGrid);
     }
 
-    static Panel CreateFlashcardPanel(FlashcardDTO card)
+    static Panel FlashcardPanel(string question, string answer)
     {
         var content = new Markup(
-            $"[bold blue]Q:[/] {card.Question}\n[bold green]A:[/] {card.Answer}"
+            $"[bold blue]Q:[/] {question}\n[bold green]A:[/] {answer}"
         );
         return new Panel(content)
             .Header("Flashcard", Justify.Center)

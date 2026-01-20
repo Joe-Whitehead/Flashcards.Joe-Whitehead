@@ -34,9 +34,18 @@ internal class StudyView
                 case StudyMenu.StudyAllStacks:
                     var allStacks = await _stackController.GetAllStacksAsync();
                     Display.PressToContinue("Studying ALl Stacks. Press any key to begin.");
-                    
-                    
+                    StudySession currentSession = await _studyController.CreateNewSessionAsync();
+                    List<StudyCard> StudyCards = allStacks
+                        .SelectMany(stack => stack.Flashcards.Select(card => new StudyCard(
+                            card.Id,
+                            card.Question,
+                            card.Answer,
+                            stack.Id,
+                            stack.Name)))
+                        .ToList();
+                    var shuffledCards = ShuffleFlashcards(StudyCards);
                     break;
+
                 case StudyMenu.StudySingleStack:
                     var stacks = await _stackController.GetAllStacksAsync();
                     var stackOptions = Display.GetModelItems(stacks);
@@ -59,13 +68,20 @@ internal class StudyView
         }
     }
 
-    private void StudySession(StackDTO stack, FlashcardDTO flashcard)
-    {        
+    private void StudyFlashcard(string stackName, int flashcardCount, string question, string answer)
+    {
         Console.Clear();
         Display.ShowTitle("Study Session");
-        AnsiConsole.MarkupLine($"[yellow]Q:[/] {flashcard.Question}");
-        Display.PressToContinue("Press any key to view the answer...");
-        AnsiConsole.MarkupLine($"[green]A:[/] {flashcard.Answer}");
-        Display.PressToContinue("Press any key to continue...");
+        AnsiConsole.Write(Display.StackInfoPanel(stackName, flashcardCount));
+        Display.ShowPanelMessage("Question", question, Color.Yellow);
+        Display.PressToContinue("Press any key to see the answer...");
+        Display.ShowPanelMessage("Answer", answer, Color.Green);
+        Display.PressToContinue();
+    }
+
+    private List<T> ShuffleFlashcards<T>(List<T> items)
+    {
+        var rnd = new Random();
+        return items.OrderBy(x => rnd.Next()).ToList();
     }
 }

@@ -52,7 +52,6 @@ public class StackController
             CreatedAt = DateTime.Now,
             Flashcards = MapFlashcards(stack.Flashcards)
         };
-        List<Stack> existingStacks = await _stackRepository.GetAllStacksAsync();
 
         return await _stackRepository.AddStackAsync(newStack);           
     }

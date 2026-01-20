@@ -92,6 +92,7 @@ internal class ManageView
             }
         }
     }
+
     private async Task GetStackSubMenuAsync(Stack stack)
     {
         bool exitSubMenu = false;

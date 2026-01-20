@@ -22,4 +22,5 @@ internal class StudyController
         await _studyRepository.AddSessionAsync(session);
         return session;
     }
+
 }

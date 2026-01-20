@@ -3,7 +3,7 @@
 public class StudySession
 {
     public int Id { get; init; }
-    public DateTime StartedAt { get; set; }
+    public DateTime StartedAt { get; set; } 
     public DateTime? EndedAt { get; set; }
     public List<int> ReviewedFlashcardIds { get; set; }
     public int TotalFlashcards { get; set; }
